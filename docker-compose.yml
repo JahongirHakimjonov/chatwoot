@@ -11,13 +11,13 @@ services:
       - postgres
       - redis
     ports:
-      - '127.0.0.1:3001:3000'
+      - '127.0.0.1:3001:3001'
     environment:
       - NODE_ENV=production
       - RAILS_ENV=production
       - INSTALLATION_ENV=docker
     entrypoint: docker/entrypoints/rails.sh
-    command: ['bundle', 'exec', 'rails', 's', '-p', '3000', '-b', '0.0.0.0']
+    command: ['bundle', 'exec', 'rails', 's', '-p', '3001', '-b', '0.0.0.0']
     restart: always
 
   sidekiq:
