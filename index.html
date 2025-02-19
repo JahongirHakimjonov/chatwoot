@@ -1,165 +1,260 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Support Chat - Chatwoot Integration</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
-  <style>
-    /* Reset and Global Styles */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
-      font-family: 'Poppins', sans-serif;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 50%, #1a2980 100%);
-      overflow: hidden;
-      position: relative;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HLS Video Player</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: white;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
 
-    /* Animated Floating Shapes in Background */
-    .floating-shape {
-      position: absolute;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 50%;
-      backdrop-filter: blur(10px);
-      animation: float 15s linear infinite;
-    }
-    .shape-1 {
-      width: 200px; height: 200px; top: 10%; left: 15%;
-    }
-    .shape-2 {
-      width: 150px; height: 150px; bottom: 15%; right: 20%;
-      animation-duration: 18s;
-    }
-    .shape-3 {
-      width: 180px; height: 180px; bottom: 25%; left: 10%;
-      animation-duration: 20s;
-    }
-    @keyframes float {
-      0%, 100% { transform: translate(0,0) scale(1); opacity: 0.7; }
-      50% { transform: translate(20px,-20px) scale(1.1); opacity: 1; }
-    }
+        #player-container {
+            width: 80%;
+            max-width: 900px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #1e1e1e;
+            margin-bottom: 20px;
+        }
 
-    /* Enhanced Glassmorphism Container */
-    .container {
-      position: relative;
-      z-index: 2;
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 30px;
-      padding: 50px 40px;
-      max-width: 450px;
-      width: 90%;
-      text-align: center;
-      backdrop-filter: blur(20px);
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      animation: slideUp 1.2s ease-out;
-    }
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(50px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+        video {
+            width: 100%;
+            height: auto;
+            border-bottom: 2px solid #333;
+        }
 
-    h1 {
-      font-size: 36px;
-      margin-bottom: 30px;
-      color: #fff;
-      text-shadow: 0 4px 8px rgba(0,0,0,0.3);
-      font-weight: 700;
-      animation: fadeIn 2s;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #292929;
+        }
 
-    p {
-      font-size: 18px;
-      line-height: 1.7;
-      margin-bottom: 40px;
-      color: #e0e0e0;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
+        .controls label {
+            font-size: 14px;
+            margin-right: 10px;
+        }
 
-    .cta-button {
-      display: inline-block;
-      padding: 16px 40px;
-      background: linear-gradient(135deg, #008c2d, #00ff4e);
-      color: #fff;
-      border: none;
-      border-radius: 50px;
-      font-size: 18px;
-      cursor: pointer;
-      text-decoration: none;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-    }
-    .cta-button:hover {
-      transform: translateY(-7px);
-      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.4);
-      background: linear-gradient(135deg, #006400, #00b74a);
-    }
-    .cta-button:active {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
+        .controls select {
+            background-color: #2c2c2c;
+            color: white;
+            border: 1px solid #444;
+            border-radius: 5px;
+            padding: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
 
-    .chat-info {
-      margin-top: 30px;
-      font-size: 14px;
-      color: rgba(255, 255, 255, 0.75);
-      animation: fadeInUp 2s;
-    }
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  </style>
+        .controls select:hover {
+            border-color: #888;
+        }
+
+        .controls select:focus {
+            outline: none;
+            border-color: #007BFF;
+        }
+
+        .logo {
+            font-size: 14px;
+            color: #777;
+        }
+
+        .logo a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        .logo a:hover {
+            text-decoration: underline;
+        }
+
+        #source-input-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        #hls-source {
+            flex-grow: 1;
+            max-width: 70%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background-color: #2c2c2c;
+            color: white;
+        }
+
+        #load-button {
+            margin-left: 10px;
+            padding: 10px 15px;
+            font-size: 14px;
+            color: white;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        #load-button:hover {
+            background-color: #0056b3;
+        }
+
+        #error-message {
+            color: #FF4C4C;
+            font-size: 14px;
+            margin-top: 10px;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-  <!-- Floating Background Shapes -->
-  <div class="floating-shape shape-1"></div>
-  <div class="floating-shape shape-2"></div>
-  <div class="floating-shape shape-3"></div>
+<div id="source-input-container">
+    <input type="text" id="hls-source" placeholder="Enter HLS source URL" aria-label="HLS source URL"/>
+    <button id="load-button" aria-label="Load HLS source">Load</button>
+</div>
+<div id="error-message" role="alert" aria-live="polite"></div>
+<div id="player-container">
+    <video id="hls-video" controls poster="https://via.placeholder.com/900x450?text=Loading+Video..."
+           aria-label="HLS video player"></video>
+    <div class="controls">
+        <div>
+            <label for="resolution">Resolution:</label>
+            <select id="resolution" aria-label="Resolution selector">
+                <option value="auto">Auto</option>
+            </select>
+        </div>
+        <div class="logo">
+            Powered by <a href="https://github.com/JahongirHakimjonov" target="_blank" rel="noopener">Jahongir</a>
+        </div>
+    </div>
+</div>
 
-  <div class="container">
-    <h1>Welcome to Our Support Chat</h1>
-    <p>
-      Our team is here to assist you. Click the button below or use the chat widget for instant support.
-    </p>
-    <a href="#" class="cta-button">Start Chatting</a>
-    <div class="chat-info">Powered by Chatwoot</div>
-  </div>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.0"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const video = document.getElementById('hls-video');
+        const resolutionSelector = document.getElementById('resolution');
+        const sourceInput = document.getElementById('hls-source');
+        const loadButton = document.getElementById('load-button');
+        const errorMessage = document.getElementById('error-message');
 
-  <script>
-    window.chatwootSettings = {
-      position: "right",
-      type: "expanded_bubble",
-      launcherTitle: "Support"
-    };
-    (function(d, t) {
-      var BASE_URL = "https://chat.milliytech.uz";
-      var g = d.createElement(t),
-          s = d.getElementsByTagName(t)[0];
-      g.src = BASE_URL + "/packs/js/sdk.js";
-      g.defer = true;
-      g.async = true;
-      s.parentNode.insertBefore(g, s);
-      g.onload = function() {
-        window.chatwootSDK.run({
-          websiteToken: "GnoXsSUEYaaJxJwVC3pqbR8j",
-          baseUrl: BASE_URL
+        let hls;
+
+        const showError = (message) => {
+            errorMessage.textContent = message;
+            setTimeout(() => {
+                errorMessage.textContent = '';
+            }, 5000);
+        };
+
+        const loadHLS = (sourceUrl) => {
+            if (hls) hls.destroy();
+
+            if (Hls.isSupported()) {
+                hls = new Hls({
+                    debug: true,
+                    maxBufferSize: 60 * 1000 * 1000, // 60MB buffer size
+                    maxBufferLength: 30, // 30 seconds of buffer
+                    maxBufferHole: 0.5, // 0.5 seconds of buffer hole
+                    xhrSetup: (xhr, url) => {
+                        xhr.setRequestHeader("X-Panda-Id", "1");
+                        xhr.setRequestHeader("X-Panda-Object-Id", "1");
+                        xhr.setRequestHeader("X-Panda-Api-Key", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM5ODU3ODM4LCJpYXQiOjE3Mzk3NzE0MzgsImp0aSI6IjY5M2M5YzAxNTM0NDQ2ZWY4ZTE5NDg1ODM0NzQ3NWYyIiwidXNlcl9pZCI6MSwicGhvbmUiOiI5OTgzMzAwNzg1ODcifQ.lzGkVeeNyg3erD_Xs8mJbjRxQsPKfK2vtmngqXPxqTw");
+                        console.log("Custom headers added for", url);
+                    }
+                });
+                hls.loadSource(sourceUrl);
+                hls.attachMedia(video);
+
+                hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                    resolutionSelector.innerHTML = '<option value="auto">Auto</option>';
+                    hls.levels.forEach((level, index) => {
+                        const option = document.createElement('option');
+                        option.value = index;
+                        option.textContent = `${level.height}p`;
+                        resolutionSelector.appendChild(option);
+                    });
+                });
+
+                hls.on(Hls.Events.ERROR, (event, data) => {
+                    if (data.fatal) {
+                        switch (data.type) {
+                            case Hls.ErrorTypes.MEDIA_ERROR:
+                                console.warn("Media error encountered, attempting recovery...");
+                                hls.recoverMediaError();
+                                break;
+                            case Hls.ErrorTypes.NETWORK_ERROR:
+                                console.error("Network error encountered.");
+                                showError("Network error occurred.");
+                                break;
+                            default:
+                                console.error("Unrecoverable error, destroying HLS instance.");
+                                hls.destroy();
+                                showError("An unrecoverable error occurred.");
+                                break;
+                        }
+                    } else {
+                        console.warn("Non-fatal error:", data);
+                    }
+                });
+
+                resolutionSelector.addEventListener('change', (event) => {
+                    const selectedValue = event.target.value;
+                    hls.currentLevel = selectedValue === 'auto' ? -1 : parseInt(selectedValue);
+                });
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = sourceUrl;
+                video.addEventListener('loadedmetadata', () => video.play());
+                resolutionSelector.style.display = 'none';
+            } else {
+                showError('Your browser does not support HLS playback.');
+            }
+        };
+
+        loadButton.addEventListener('click', () => {
+            const sourceUrl = sourceInput.value.trim();
+            if (sourceUrl) {
+                loadHLS(sourceUrl);
+            } else {
+                showError('Please enter a valid HLS source URL.');
+            }
         });
-      };
+    });
+    window.chatwootSettings = {
+        position: "right",
+        type: "expanded_bubble",
+        launcherTitle: "Support"
+    };
+    (function (d, t) {
+        var BASE_URL = "https://chat.milliytech.uz";
+        var g = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        g.src = BASE_URL + "/packs/js/sdk.js";
+        g.defer = true;
+        g.async = true;
+        s.parentNode.insertBefore(g, s);
+        g.onload = function () {
+            window.chatwootSDK.run({
+                websiteToken: "GnoXsSUEYaaJxJwVC3pqbR8j",
+                baseUrl: BASE_URL
+            });
+        };
     })(document, "script");
-  </script>
+</script>
 </body>
 </html>
